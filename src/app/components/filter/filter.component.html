@@ -1,0 +1,11 @@
+<div class="container">
+    <form (ngSubmit)="onSubmit()" style="margin: 20px;">
+        <div class="input-group mb-3" style="margin: 0 auto">
+            <input aria-describedby="submit" placeholder="Name" class="form-control" [(ngModel)]="filterForm.name" type="text" id="name" name="name" #name="ngModel">
+            <input aria-describedby="submit" placeholder="Type" class="form-control" [(ngModel)]="filterForm.type" type="text" id="type" name="type" #type="ngModel">
+            <div class="input-group-append" style="display: inline-block">
+                <button id="submit" class="btn btn-primary" type="submit">Искать</button>
+            </div>
+        </div>
+    </form>
+</div>

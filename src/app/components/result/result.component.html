@@ -1,0 +1,16 @@
+<div class="container">
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+        </tr>
+        <ng-template ngFor let-item [ngForOf]="items">
+            <tr >
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.type }}</td>
+            </tr>
+        </ng-template>
+    </table>
+</div>
