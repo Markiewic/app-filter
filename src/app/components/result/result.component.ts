@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
-import { ItemModel } from 'src/app/item-model';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DataService } from 'src/app/data.service';
+import { ItemModel } from 'src/app/item-model';
 
 @Component({
     selector: 'result',
@@ -11,25 +12,36 @@ import { DataService } from 'src/app/data.service';
 })
 export class ResultComponent {
 
-    constructor(private route: ActivatedRoute, private dataService: DataService) { };
+    constructor(private router: Router, private route: ActivatedRoute, private dataService: DataService, private formBuilder: FormBuilder) { }
 
-    name: string;
-    type: string;
+    filterForm: FormGroup = this.formBuilder.group({
+        name: [''],
+        type: ['']
+    });
 
-    items: ItemModel[] = [];
-
-    getItems(): void {
-        this.dataService.getItems(this.name, this.type).subscribe(items => this.items = items);
+    clear(): void {
+        this.router.navigate(['/']);
     }
 
-    ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
-            this.name = params.name;
-            this.type = params.type;
-
-            this.getItems();
-        });
-
+    onSubmit(): void {
+        this.router.navigate(['/'], { queryParams: { name: this.filterForm.value.name, type: this.filterForm.value.type } });
     }
+
+    items$: Observable<ItemModel[]> = combineLatest(this.route.queryParams, this.dataService.getItems())
+        .pipe(
+            map(
+                ([params, items]): ItemModel[] => {
+                    this.filterForm.patchValue({ name: params.name, type: params.type });
+                    return (params.name || params.type)
+                        ?
+                        items.filter((item) =>
+                            ((params.name ? item.name.toLowerCase().includes(params.name.toLowerCase()) : true)
+                                && (params.type ? item.type.toLowerCase().includes(params.type.toLowerCase()) : true)))
+                        :
+                        items
+                }
+            )
+        );
+
 
 }

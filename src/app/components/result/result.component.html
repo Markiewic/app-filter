@@ -1,12 +1,24 @@
 <div class="container">
+    <form [formGroup]="filterForm" (ngSubmit)="onSubmit()" style="margin: 20px;">
+        <div class="input-group mb-3" style="margin: 0 auto">
+            <input placeholder="Name" class="form-control" type="text" id="name" name="name" formControlName="name">
+            <input placeholder="Type" class="form-control" type="text" id="type" name="type" formControlName="type">
+            <div class="input-group-append" style="display: inline-block">
+                <input type="button" id="clear" (click)="clear()" class="btn" *ngIf="(filterForm.controls['name'].value || filterForm.controls['type'].value) || false" value="Очистить">
+                <button id="submit" class="btn btn-primary" type="submit">Искать</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container">
     <table class="table">
         <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Type</th>
         </tr>
-        <ng-template ngFor let-item [ngForOf]="items">
-            <tr >
+        <ng-template ngFor let-item [ngForOf]="items$ | async">
+            <tr>
                 <td>{{ item.id }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.type }}</td>

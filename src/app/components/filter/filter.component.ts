@@ -22,7 +22,7 @@ export class FilterComponent {
     };
 
     onSubmit() {
-        this.router.navigate(['/'], { queryParams: { name: this.filterForm.name, type: this.filterForm.type } });
+        this.router.navigate(['/'], { queryParams: { name: this.filterForm.name, type: this.filterForm.value.type } });
     }
 
 }
