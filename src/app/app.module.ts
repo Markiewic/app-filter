@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { FilterComponent } from './components/filter/filter.component';
 import { ResultComponent } from './components/result/result.component';
 import { DataService } from './data.service';
 
@@ -15,7 +14,6 @@ const routes: Routes = [
 @NgModule({
     declarations: [
         AppComponent,
-        FilterComponent,
         ResultComponent
     ],
     imports: [
