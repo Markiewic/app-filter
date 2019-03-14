@@ -1,14 +1,23 @@
 <div class="container">
-    <form [formGroup]="filterForm" (ngSubmit)="onSubmit()" style="margin: 20px;">
+    <form [formGroup]="filterForm" style="margin: 20px;">
         <div class="input-group mb-3" style="margin: 0 auto">
-            <input placeholder="Name" class="form-control" type="text" id="name" name="name" formControlName="name">
-            <input placeholder="Type" class="form-control" type="text" id="type" name="type" formControlName="type">
+            <input placeholder="Имя" class="form-control" type="text" id="name" name="name" formControlName="name">
+            <input placeholder="Тип" class="form-control" type="text" id="type" name="type" formControlName="type">
             <div class="input-group-append" style="display: inline-block">
                 <input type="button" id="clear" (click)="clear()" class="btn" *ngIf="(filterForm.controls['name'].value || filterForm.controls['type'].value) || false" value="Очистить">
                 <button id="submit" class="btn btn-primary" type="submit">Искать</button>
             </div>
         </div>
     </form>
+    <div *ngIf="(filterForm.controls['name'].value || filterForm.controls['type'].value) || false">
+        Данные отфильтрованы по условию:
+        <div *ngIf="filterForm.controls['name'].value">
+            Имя: {{ filterForm.controls['name'].value }}
+        </div>
+        <div *ngIf="filterForm.controls['type'].value">
+            Тип: {{ filterForm.controls['type'].value }}
+        </div>
+    </div>
 </div>
 <div class="container">
     <table class="table">

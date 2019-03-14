@@ -1,4 +1,6 @@
-export let mockItems = [
+import { ItemModel } from './item-model';
+
+export let mockItems: ItemModel[] = [
     {
         id: 0,
         name: "Despacito",
