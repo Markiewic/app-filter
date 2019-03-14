@@ -9,13 +9,15 @@
             </div>
         </div>
     </form>
-    <div *ngIf="(filterForm.controls['name'].value || filterForm.controls['type'].value) || false">
-        Данные отфильтрованы по условию:
-        <div *ngIf="filterForm.controls['name'].value">
-            Имя: {{ filterForm.controls['name'].value }}
-        </div>
-        <div *ngIf="filterForm.controls['type'].value">
-            Тип: {{ filterForm.controls['type'].value }}
+    <div *ngIf="(filterForm.valueChanges | async) as filter">
+        <div *ngIf="filter.name || filter.type">
+            Данные отфильтрованы по условию:
+            <div *ngIf="filter.name">
+                Имя: {{ filter.name }}
+            </div>
+            <div *ngIf="filter.type">
+                Тип: {{ filter.type }}
+            </div>
         </div>
     </div>
 </div>
