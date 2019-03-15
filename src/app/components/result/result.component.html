@@ -4,19 +4,19 @@
             <input placeholder="Имя" class="form-control" type="text" id="name" name="name" formControlName="name">
             <input placeholder="Тип" class="form-control" type="text" id="type" name="type" formControlName="type">
             <div class="input-group-append" style="display: inline-block">
-                <input type="button" id="clear" (click)="clear()" class="btn" *ngIf="(filterForm.controls['name'].value || filterForm.controls['type'].value) || false" value="Очистить">
+                <input type="button" id="clear" (click)="clear()" class="btn" *ngIf="(filter$ | async).applied" value="Очистить">
                 <button id="submit" class="btn btn-primary" type="submit">Искать</button>
             </div>
         </div>
     </form>
-    <div *ngIf="(filterForm.valueChanges | async) as filter">
-        <div *ngIf="filter.name || filter.type">
+    <div *ngIf="(filter$ | async) as filter">
+        <div *ngIf="filter.applied">
             Данные отфильтрованы по условию:
-            <div *ngIf="filter.name">
-                Имя: {{ filter.name }}
+            <div *ngIf="filter.conditions.name">
+                Имя: {{ filter.conditions.name }}
             </div>
-            <div *ngIf="filter.type">
-                Тип: {{ filter.type }}
+            <div *ngIf="filter.conditions.type">
+                Тип: {{ filter.conditions.type }}
             </div>
         </div>
     </div>

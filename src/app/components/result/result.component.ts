@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { DataService } from 'src/app/data.service';
 import { ItemModel } from 'src/app/item-model';
+import { IFilterModel } from 'src/app/ifilter-model';
 
 @Component({
     selector: 'result',
@@ -19,15 +19,28 @@ export class ResultComponent {
         type: [null]
     }, { updateOn: 'submit' });
 
-    items$: Observable<ItemModel[]> = combineLatest(this.filterForm.valueChanges.pipe(startWith(this.filterForm.value)), this.dataService.getItems())
+    filter$: Observable<IFilterModel> = this.filterForm.valueChanges.pipe(
+        startWith(this.filterForm.value),
+        map(
+            filter => <IFilterModel>{
+                applied: !!(filter.name || filter.type),
+                conditions: {
+                    name: filter.name,
+                    type: filter.type
+                }
+            }
+        )
+    );
+
+    items$: Observable<ItemModel[]> = combineLatest(this.filter$, this.dataService.getItems())
         .pipe(
             map(
                 ([filter, items]): ItemModel[] =>
-                    (filter.name || filter.type)
+                    (filter.applied)
                         ?
                         items.filter((item) =>
-                            ((filter.name ? item.name.toLowerCase().includes(filter.name.toLowerCase()) : true)
-                                && (filter.type ? item.type.toLowerCase().includes(filter.type.toLowerCase()) : true)))
+                            ((filter.conditions.name ? item.name.toLowerCase().includes(filter.conditions.name.toLowerCase()) : true)
+                                && (filter.conditions.type ? item.type.toLowerCase().includes(filter.conditions.type.toLowerCase()) : true)))
                         :
                         items
             )
