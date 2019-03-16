@@ -1,15 +1,19 @@
 <div class="container">
     <form [formGroup]="filterForm" style="margin: 20px;">
         <div class="input-group mb-3" style="margin: 0 auto">
-            <input placeholder="Имя" class="form-control" type="text" id="name" name="name" formControlName="name">
-            <input placeholder="Тип" class="form-control" type="text" id="type" name="type" formControlName="type">
+            <input placeholder="Имя" class="form-control" type="text" id="name" name="name" formControlName="title">
             <div class="input-group-append" style="display: inline-block">
-                <input type="button" id="clear" (click)="clear()" class="btn" *ngIf="filterApplied$ | async" value="Очистить">
+                <input type="button" id="clear" (click)="clearFilter()" class="btn" *ngIf="filterApplied$ | async"
+                    value="Очистить">
                 <button id="submit" class="btn btn-primary" type="submit">Искать</button>
             </div>
         </div>
     </form>
-    <div *ngIf="(filter$ | async) as filter">
+    <form [formGroup]="tabForm">
+        <input type="radio" formControlName="tab" value="all" checked> Все
+        <input type="radio" formControlName="tab" value="saved"> Отложенные
+    </form>
+    <!-- <div *ngIf="(filter$ | async) as filter">
         <div *ngIf="filterApplied$ | async">
             Данные отфильтрованы по условию:
             <div *ngIf="filter.name">
@@ -19,22 +23,20 @@
                 Тип: {{ filter.type }}
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 <div class="container">
     <table class="table">
         <tr>
             <th>Save</th>
+            <th>Title</th>
             <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
         </tr>
-        <ng-template ngFor let-item [ngForOf]="items$ | async">
+        <ng-template ngFor let-video [ngForOf]="filteredTabbedVideosList$ | async">
             <tr>
-                <td><input type="checkbox" /></td>
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.type }}</td>
+                <td><input type="checkbox" [ngModel]="video.checked" (change)="save(video.id)" /></td>
+                <td>{{ video.title }}</td>
+                <td>{{ video.id }}</td>
             </tr>
         </ng-template>
     </table>

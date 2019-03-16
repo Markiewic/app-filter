@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { combineLatest, Observable } from 'rxjs';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { DataService } from 'src/app/data.service';
-import { ItemModel } from 'src/app/item-model';
 import { IFilterModel } from 'src/app/ifilter-model';
+import { YTVideoEntry } from 'src/app/ytvideo-entry';
+import { YTVideosService } from "src/app/ytvideos.service";
 
 @Component({
     selector: 'result',
@@ -12,45 +12,62 @@ import { IFilterModel } from 'src/app/ifilter-model';
 })
 export class ResultComponent {
 
-    constructor(private dataService: DataService, private formBuilder: FormBuilder) { }
+    constructor(private ytVideosService: YTVideosService, private formBuilder: FormBuilder) { }
+
+    tabForm: FormGroup = this.formBuilder.group({
+        tab: new FormControl('all')
+    }, { updateOn: 'change' });
+
+    tab$: Observable<string> = this.tabForm.valueChanges.pipe(
+        startWith('all'),
+        map(tabForm => tabForm.tab)
+    )
 
     filterForm: FormGroup = this.formBuilder.group({
-        name: [null],
-        type: [null]
+        title: ['']
     }, { updateOn: 'submit' });
 
     filter$: Observable<IFilterModel> = this.filterForm.valueChanges.pipe(
         startWith(this.filterForm.value),
         map(
             filter => <IFilterModel>{
-                name: filter.name,
-                type: filter.type
+                title: filter.title
             }
         )
     );
 
-    filterApplied$: Observable<boolean> = this.filter$.pipe(
+    clearFilter(): void {
+        this.filterForm.setValue({ title: '' });
+    }
+
+    filterApplied$: Observable<boolean> = this.filter$.pipe(map(filter => !!filter.title));
+
+    saved: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    saved$: Observable<string[]> = this.saved.asObservable();
+
+    save(toggleId: string): void {
+        this.saved.next(this.saved.value.some(id => toggleId === id) ? this.saved.value.filter(id => toggleId !== id) : this.saved.value.concat(toggleId));
+    }
+
+    videosList$: Observable<YTVideoEntry[]> = combineLatest(this.ytVideosService.getVideos(), this.saved).pipe(
         map(
-            filter => !!(filter.name || filter.type)
+            ([videos, saved]) => videos.map(video => ({ ...video, checked: saved.some(id => video.id === id) }))
         )
     )
 
-    items$: Observable<ItemModel[]> = combineLatest(this.filterApplied$, this.filter$, this.dataService.getItems())
-        .pipe(
-            map(
-                ([filterApplied, filter, items]): ItemModel[] =>
-                    (filterApplied)
-                        ?
-                        items.filter((item) =>
-                            ((filter.name ? item.name.toLowerCase().includes(filter.name.toLowerCase()) : true)
-                                && (filter.type ? item.type.toLowerCase().includes(filter.type.toLowerCase()) : true)))
-                        :
-                        items
-            )
-        );
+    tabbedVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.videosList$, this.tab$).pipe(
+        map(
+            ([videos, tab]) => tab === 'saved' ? videos.filter(video => video.checked) : videos
+        )
+    )
 
-    clear(): void {
-        this.filterForm.setValue({ name: '', type: '' })
-    }
+    filteredTabbedVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.tabbedVideosList$, this.filterApplied$, this.filter$).pipe(
+        map(
+            ([videos, filterApplied, filter]) =>
+                (filterApplied
+                    ? videos.filter(video => video.title.toLowerCase().includes(filter.title.toLowerCase()))
+                    : videos)
+        )
+    )
 
 }

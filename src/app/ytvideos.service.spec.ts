@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DataService } from './data.service';
+import { YTVideosService } from './ytvideos.service';
 
-describe('DataServiceService', () => {
+describe('YTVideosService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DataService = TestBed.get(DataService);
+    const service: YTVideosService = TestBed.get(YTVideosService);
     expect(service).toBeTruthy();
   });
 });

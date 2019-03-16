@@ -5,7 +5,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { ResultComponent } from './components/result/result.component';
-import { DataService } from './data.service';
+import { YTVideosService } from "./ytvideos.service";
+import { HttpClientModule } from '@angular/common/http';
 
 const routes: Routes = [
     { path: '', component: AppComponent }
@@ -18,12 +19,13 @@ const routes: Routes = [
     ],
     imports: [
         BrowserModule,
+        HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
         RouterModule.forRoot(routes),
     ],
     providers: [
-        DataService
+        YTVideosService
     ],
     bootstrap: [AppComponent]
 })

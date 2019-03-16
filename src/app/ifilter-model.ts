@@ -1,4 +1,3 @@
 export interface IFilterModel {
-    name: string,
-    type: string
+    title: string
 }
