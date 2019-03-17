@@ -5,6 +5,7 @@ import { map, startWith } from 'rxjs/operators';
 import { IFilterModel } from 'src/app/ifilter-model';
 import { YTVideoEntry } from 'src/app/ytvideo-entry';
 import { YTVideosService } from "src/app/ytvideos.service";
+import { YTVideo } from 'src/app/ytvideo';
 
 @Component({
     selector: 'result',
@@ -49,25 +50,25 @@ export class ResultComponent {
         this.saved.next(this.saved.value.some(id => toggleId === id) ? this.saved.value.filter(id => toggleId !== id) : this.saved.value.concat(toggleId));
     }
 
-    videosList$: Observable<YTVideoEntry[]> = combineLatest(this.ytVideosService.getVideos(), this.saved).pipe(
-        map(
-            ([videos, saved]) => videos.map(video => ({ ...video, checked: saved.some(id => video.id === id) }))
-        )
-    )
-
-    tabbedVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.videosList$, this.tab$).pipe(
-        map(
-            ([videos, tab]) => tab === 'saved' ? videos.filter(video => video.checked) : videos
-        )
-    )
-
-    filteredTabbedVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.tabbedVideosList$, this.filterApplied$, this.filter$).pipe(
+    filteredVideos$: Observable<YTVideo[]> = combineLatest(this.ytVideosService.getVideos(), this.filterApplied$, this.filter$).pipe(
         map(
             ([videos, filterApplied, filter]) =>
                 (filterApplied
                     ? videos.filter(video => video.title.toLowerCase().includes(filter.title.toLowerCase()))
                     : videos)
         )
-    )
+    );
+
+    filteredVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.filteredVideos$, this.saved$).pipe(
+        map(
+            ([videos, saved]) => videos.map(video => ({ ...video, checked: saved.some(id => video.id === id) }))
+        )
+    );
+
+    tabbedFilteredVideosList$: Observable<YTVideoEntry[]> = combineLatest(this.filteredVideosList$, this.tab$).pipe(
+        map(
+            ([videos, tab]) => tab === 'saved' ? videos.filter(video => video.checked) : videos
+        )
+    );
 
 }

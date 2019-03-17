@@ -13,17 +13,6 @@
         <input type="radio" formControlName="tab" value="all" checked> Все
         <input type="radio" formControlName="tab" value="saved"> Отложенные
     </form>
-    <!-- <div *ngIf="(filter$ | async) as filter">
-        <div *ngIf="filterApplied$ | async">
-            Данные отфильтрованы по условию:
-            <div *ngIf="filter.name">
-                Имя: {{ filter.name }}
-            </div>
-            <div *ngIf="filter.type">
-                Тип: {{ filter.type }}
-            </div>
-        </div>
-    </div> -->
 </div>
 <div class="container">
     <table class="table">
@@ -32,7 +21,7 @@
             <th>Title</th>
             <th>ID</th>
         </tr>
-        <ng-template ngFor let-video [ngForOf]="filteredTabbedVideosList$ | async">
+        <ng-template ngFor let-video [ngForOf]="tabbedFilteredVideosList$ | async">
             <tr>
                 <td><input type="checkbox" [ngModel]="video.checked" (change)="save(video.id)" /></td>
                 <td>{{ video.title }}</td>
